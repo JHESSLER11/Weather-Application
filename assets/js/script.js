@@ -1,14 +1,26 @@
+const apiKey = '56cd55bcb41fb1d5dd1158c24bb37cc0';
+const searchCity = $('.citySearch');
+const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=${apiKey}`
 
 
-function fetchApi() {
-    var apiUrl = 'http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid=56cd55bcb41fb1d5dd1158c24bb37cc0'
+fetch(url)
+.then(function (response) {
+    let data = response.json()
+    return data
+})
+.then(function(data) {
 
-   $.ajax(apiUrl).done(function(response) {
-       console.log(response)
-   });
-};
+});
+    //msg.textContent = "search for a real city";
+// function fetchApi() {
+//     var apiUrl = 'http://api.openweathermap.org/geo/1.0/direct?q=asheville,NC,US&limit=56cd55bcb41fb1d5dd1158c24bb37cc';
 
-fetchApi()
+//    $.ajax(apiUrl).done(function(response) {
+//        console.log(response)
+//    });
+// };
+
+//fetchApi()
 
 
 $(".searchBtn").on("click", function() {
