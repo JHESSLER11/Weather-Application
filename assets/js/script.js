@@ -40,7 +40,7 @@ const searchedCities = []; //stringify the local storage
             
         });
 
-
+//for loop through searchcities to display them. 
 
 //$('#searchContainer .citySearch').val(localStorage.getItem("searchContainer"))
 
