@@ -1,5 +1,6 @@
 const apiKey = '56cd55bcb41fb1d5dd1158c24bb37cc0';
 const searchedCities = []; //stringify the local storage
+var cCounter = 0
 //const searchCity = $('.citySearch');
 //const searchCity = $('#searchForm .citySearch').val(localStorage.getItem("searchForm"))
 //msg.textContent = "search for a real city";
@@ -19,7 +20,7 @@ const searchedCities = []; //stringify the local storage
             //calls the search item
             var city = $(this).siblings(".citySearch").val();
             //var cities = $(this).parent().attr('id');
-            
+            //if statement that will check the array for duplicate cities
             searchedCities.push(city);
             //puts the value in local storage
             localStorage.setItem("cities", city)
@@ -40,6 +41,35 @@ const searchedCities = []; //stringify the local storage
             
         });
 
+var searchEl = function() {
+    var btnEl = document.createElement('button')
+    btnEl.className = "btn btn-second"
+    btnEl.textContent = document.querySelector("input[name='city']")
+    btnEl.setAttribute('data-city-id', cCounter);
+    btnEl.setAttribute('id', 'searchBtn');
+    btnEl.setAttribute('type', "submit");
+}
+var citieStorage = function() {
+    var searchList = JSON.parse(localStorage.getItem('city'))
+
+    for (let index = 0; index < searchList.length; index++) {
+        var btnEl = document.createElement('button')
+        btnEl.className = "btn btn-second"
+        btnEl.textContent = searchList[index];
+        btnEl.setAttribute('data-city-id', cCounter);
+        btnEl.setAttribute('id', 'searchBtn');
+        btnEl.setAttribute('type', "submit");
+    console.log(index)
+};
+}
+
+
+if (localStorage.getItem('city')) {
+    JSON.parse(cities = localStorage.getItem('city'))
+}
+if (searchedCities.length !==0) {
+    loadSearch();
+}
 //for loop through searchcities to display them. 
 
 //$('#searchContainer .citySearch').val(localStorage.getItem("searchContainer"))
