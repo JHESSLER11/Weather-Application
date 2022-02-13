@@ -9,19 +9,19 @@ console.log(searchHistory);
 $("#search-bar").on("submit", handleSearching);
 $("#previous-searches").on("click", handleHistoryItems);
 
-init();
+history();
 
-function init() {
+function history() {
   //showing all previous history
   renderTheHistory();
 
   //show the last city that was searched by the user
   if (searchHistory.length > 0) {
-    showCityWeather(searchHistory[searchHistory.length - 1]);
+    CityWeather(searchHistory[searchHistory.length - 1]);
   }
 }
 
-function showCityWeather(city) {
+function CityWeather(city) {
   console.log({ city });
   //weather from openweathermap
 
@@ -38,14 +38,15 @@ function showCityWeather(city) {
     $("#current-weather").text(
       response.name + " (" + moment().format("l") + ")"
     );
-    $("#cityIcon").attr("src", weatherIconURL(response.weather[0].icon));
+    $("#weatherIcon").attr("src", weatherIconURL(response.weather[0].icon));
+    // get temp in f
     $("#temp").text(
       ((response.main.temp.toFixed(1) - 273.15) * 1.8 + 32).toFixed(2)
     );
     $("#humidity").text(response.main.humidity);
     $("#wind").text(response.wind.speed);
     $("#current-weather").attr("style", "display: block");
-    console.log({ response });
+    //console.log({ response });
 
     var uvURL =
 
@@ -88,13 +89,13 @@ function showCityWeather(city) {
   });
 
   //future 5-day weather forcast
-  var forcastQueryURL =
+  var forcastURL =
     "https://api.openweathermap.org/data/2.5/forecast?q=" +
     city +
     "&appid=" +
     API_Key;
   $.ajax({
-    url: forcastQueryURL,
+    url: forcastURL,
     method: "GET",
   }).then(function (response) {
     var listingIndex = GoodStartIndex(response);
@@ -131,12 +132,12 @@ function handleSearching(event) {
   var city = $("#city-input").val().trim();
   $("#city-input").val("");
   addHistoryCity(city);
-  showCityWeather(city);
+  CityWeather(city);
 }
 
 function handleHistoryItems(event) {
   if (event.target.matches("button")) {
-    showCityWeather($(event.target).attr(historyDataCityAttr));
+    CityWeather($(event.target).attr(historyDataCityAttr));
   }
 }
 
