@@ -10,4 +10,4 @@ The application will take a city you search for and display the current weather 
 ![Alt text](https://github.com/JHESSLER11/Weather-Application/blob/main/assets/images/Screen%20Shot%20saved.png)
 
 ## Link to deployed application
-Click [Here!](https://jhessler11.github.io/Work-day-scheduler/) to go to my deloyed application
+Click [Here!](https://jhessler11.github.io/Weather-Application/) to go to my deloyed application
