@@ -3,9 +3,31 @@ const historyBtnBsClasses = "btn btn-dark border text-left";
 const historyDataCityAttr = "data-city";
 const API_Key = "56cd55bcb41fb1d5dd1158c24bb37cc0";
 
-var searchHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
-console.log(searchHistory);
+let searchListHistory = JSON.parse(localStorage.getItem(historyKey)) || [];
+console.log(searchListHistory);
 
+let weather = {
+  fetchWeather: function (city) {
+    fetch(
+      "http://api.openweathermap.org/data/2.5/weather?q=" +
+        city +
+        "&units=metric&appid=" +
+        API_Key
+    )
+      .then((response) => response.json())
+      .then((data) => console.log(data));
+  },
+  displayWeather: function (data) {
+    const { name } = data;
+    const { icon, description } = data.weather;
+    const { temp, humidity } = data.main;
+    const { speed } = data.wind;
+    console.log(name, icon, description, temp, humidity, speed);
+    document.querySelector(".city").innerText = "Weather in " + name;
+    document.querySelector(".icon").src =
+      "https://openweathermap.org/img/w/" + icon + "@2x.png";
+  },
+};
 $("#search-bar").on("submit", handleSearching);
 $("#previous-searches").on("click", handleHistoryItems);
 
@@ -16,15 +38,14 @@ function init() {
   renderTheHistory();
 
   //show the last city that was searched by the user
-  if (searchHistory.length > 0) {
-    showCityWeather(searchHistory[searchHistory.length - 1]);
+  if (searchListHistory.length > 0) {
+    showCityWeather(searchListHistory[searchListHistory.length - 1]);
   }
 }
 
 function showCityWeather(city) {
   console.log({ city });
-  //weather from openweathermap
-
+  //grabbing the weather from openweathermap
   var queryURL =
     "http://api.openweathermap.org/data/2.5/weather?q=" +
     city +
@@ -39,6 +60,7 @@ function showCityWeather(city) {
       response.name + " (" + moment().format("l") + ")"
     );
     $("#cityIcon").attr("src", weatherIconURL(response.weather[0].icon));
+    console.log($("#cityIcon"));
     $("#temp").text(
       ((response.main.temp.toFixed(1) - 273.15) * 1.8 + 32).toFixed(2)
     );
@@ -47,7 +69,8 @@ function showCityWeather(city) {
     $("#current-weather").attr("style", "display: block");
     console.log({ response });
 
-    var uvURL =
+    var uvQueryURL =
+      // https://api.openweathermap.org/data/2.5/onecall?lat={lat}&lon={lon}&exclude={part}&appid={API key}
 
       "https://api.openweathermap.org/data/2.5/onecall?lat=" +
       response.coord.lat +
@@ -58,37 +81,37 @@ function showCityWeather(city) {
       API_Key;
 
     $.ajax({
-      url: uvURL,
+      url: uvQueryURL,
       method: "GET",
     }).then(function (UVresponse) {
+      console.log({ UVresponse });
       $("#uv-Index").text(UVresponse.current.uvi);
-      var uvIndex = UVresponse.current.uvi;
-      console.log(typeof uvIndex);
+      var uvNumber = UVresponse.current.uvi;
+      console.log(typeof uvNumber);
       //setting uvIndex color on the background from function at the bottom for appropriate color
       console.log($("#uv-Index").text(UVresponse.current.uvi));
-      var sVal = $("#uv-Index").text(uvIndex);
+      var sVal = $("#uv-Index").text(uvNumber);
       var iNum = parseInt(sVal);
       console.log(iNum);
 
       $("#uv-Index").attr("style", function getUVColor() {
-        if (uvIndex <= 3.0) {
-          return "background-color: green; color: white";
-        } else if (uvIndex <= 6.0 && uvIndex > 3.0) {
+        if (uvNumber <= 3.0) {
+          return "background-color: blue; color: white";
+        } else if (uvNumber <= 7.0 && uvNumber > 3.0) {
           return "background-color: yellow; color: black";
-        } else if (uvIndex <= 9.0 && uvIndex > 6.0) {
+        } else if (uvNumber <= 10.0 && uvNumber > 7.0) {
           return "background-color: red; color: black";
         } else {
-          return "background-color: teal; color: white";
+          return "background-color: purple; color: white";
         }
       });
       //display uv color
       $("#uvIndexColor").attr("style", "display: block");
     });
 
-    //current city weather categories being returned
   });
 
-  //retreiving the future 5-day weather forcast
+  //the future 5-day weather
   var forcastQueryURL =
     "https://api.openweathermap.org/data/2.5/forecast?q=" +
     city +
@@ -103,14 +126,14 @@ function showCityWeather(city) {
 
     //for loop to update the 5-day forcast
     for (var i = 1; i <= 5; i++) {
-      var eachDay = $("#forecast-" + i);
-      eachDay
+      var cardDay = $("#forecast-" + i);
+      cardDay
         .find("h5")
         .text(moment(listing[listingIndex].dt * 1000).format("l"));
-      eachDay
+      cardDay
         .find("img")
         .attr("src", weatherIconURL(listing[listingIndex].weather[0].icon));
-      eachDay
+      cardDay
         .find(".temp")
         .text(
           (
@@ -118,8 +141,8 @@ function showCityWeather(city) {
             32
           ).toFixed(2)
         );
-      eachDay.find(".humidity").text(listing[listingIndex].main.humidity);
-      eachDay.find(".wind").text(listing[listingIndex].wind.speed);
+      cardDay.find(".humidity").text(listing[listingIndex].main.humidity);
+      cardDay.find(".wind").text(listing[listingIndex].wind.speed);
       listingIndex += 8;
     }
     $("#future-forecast").attr("style", "display: block");
@@ -145,7 +168,7 @@ function handleHistoryItems(event) {
 function renderTheHistory() {
   var searchingHistory = $("#previous-searches");
   searchingHistory.empty();
-  searchHistory.forEach((city) => {
+  searchListHistory.forEach((city) => {
     var btn = $("<button>").addClass(historyBtnBsClasses);
     btn.attr(historyDataCityAttr, city);
     btn.text(city);
@@ -167,14 +190,18 @@ function GoodStartIndex(response) {
 
 //adding to history searches list
 function addHistoryCity(city) {
-  if (!searchHistory.includes(city)) {
-    searchHistory.push(city);
-    localStorage.setItem(historyKey, JSON.stringify(searchHistory));
+  if (!searchListHistory.includes(city)) {
+    searchListHistory.push(city);
+    localStorage.setItem(historyKey, JSON.stringify(searchListHistory));
     renderTheHistory();
   }
 }
+
+//creatings color background for the uvIndex depending on where it comes in for the ranges
 
 //getting a weather icon that matches the current weather data
 function weatherIconURL(iconCode) {
   return "https://openweathermap.org/img/w/" + iconCode + ".png";
 }
+
+// $("clear-btn").on("submit", localStorage.clear());
