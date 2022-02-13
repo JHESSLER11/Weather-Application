@@ -1,5 +1,5 @@
 const historyKey = "weatherCitySearchHistory";
-const historyBtnBsClasses = "btn btn-dark border text-left";
+const historyBtnBsClasses = "btn btn-info border text-left";
 const historyDataCityAttr = "data-city";
 const API_Key = "56cd55bcb41fb1d5dd1158c24bb37cc0";
 
@@ -68,7 +68,6 @@ function showCityWeather(city) {
       console.log($("#uv-Index").text(UVresponse.current.uvi));
       var sVal = $("#uv-Index").text(uvIndex);
       var iNum = parseInt(sVal);
-      console.log(iNum);
 
       $("#uv-Index").attr("style", function getUVColor() {
         if (uvIndex <= 3.0) {
@@ -88,7 +87,7 @@ function showCityWeather(city) {
     //current city weather categories being returned
   });
 
-  //retreiving the future 5-day weather forcast
+  //future 5-day weather forcast
   var forcastQueryURL =
     "https://api.openweathermap.org/data/2.5/forecast?q=" +
     city +
@@ -101,7 +100,7 @@ function showCityWeather(city) {
     var listingIndex = GoodStartIndex(response);
     var listing = response.list;
 
-    //for loop to update the 5-day forcast
+    //for loop to update the 5-day weather
     for (var i = 1; i <= 5; i++) {
       var eachDay = $("#forecast-" + i);
       eachDay
